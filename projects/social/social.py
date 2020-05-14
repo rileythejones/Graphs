@@ -1,3 +1,6 @@
+import random
+
+
 class User:
     def __init__(self, name):
         self.name = name
@@ -39,14 +42,63 @@ class SocialGraph:
         The number of users must be greater than the average number of friendships.
         """
         # Reset graph
+        
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
         # Add users
+        
+        names = ["Bob", "Sally", "Saul", "David", "Frisbee", "Timmy", "Jen"] 
+
+        for x in range(0, num_users):
+            name = random.choice(names)
+            self.add_user(name)
+
+        list_of_user_ids = [user for user in self.users]
 
         # Create friendships
+    
+        total_friendships = 0
+        mean_friendships = 0 
+
+        while (mean_friendships < avg_friendships):
+            mean_friendships = total_friendships/len(self.users)
+
+            choice1 = random.choice(list_of_user_ids)
+            choice2 = random.choice(list_of_user_ids)
+
+            if choice1 != choice2:
+                if choice1 not in self.friendships[choice2]:
+                    self.add_friendship(choice1, choice2)
+                    total_friendships += 2
+
+                  
+    def get_one_social_path(self, user_id, target_value, visited=None, path=None):
+
+        if visited is None:
+            visited = set()
+
+        if path is None:
+            path = []
+
+        visited.add(user_id)
+
+        # Make a copy of the list, adding the new vert on
+        path = path + [user_id]
+
+        # Base case
+        if user_id == target_value:
+            return path
+
+        for friend in self.friendships[user_id]:
+            if friend not in visited:
+                new_path = self.get_one_social_path(friend, target_value, visited, path)
+
+                if new_path:
+                    return new_path
+
+        return None 
 
     def get_all_social_paths(self, user_id):
         """
@@ -57,9 +109,13 @@ class SocialGraph:
 
         The key is the friend's ID and the value is the path.
         """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
-        return visited
+
+        path_dictionary = {}
+        
+        for friend in self.friendships:
+            path_dictionary[friend] = self.get_one_social_path(friend, user_id)
+
+        return path_dictionary
 
 
 if __name__ == '__main__':
